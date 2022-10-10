@@ -1,25 +1,26 @@
 import logo from './logo.svg';
 import './App.css';
 
+import { Unity, useUnityContext } from "react-unity-webgl";
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const { unityProvider, sendMessage } = useUnityContext({
+        loaderUrl    : "game/game.loader.js",
+        dataUrl      : "game/game.data",
+        frameworkUrl : "game/game.framework.js",
+        codeUrl      : "game/game.wasm",
+    });
+
+    function handleClickMessage() {
+        sendMessage("GameController", "printMessage", "asdf");
+    }
+
+    return (
+        <div className="App">
+            <Unity style={{width:'100%',height:"80vh"}} unityProvider={unityProvider} />
+            <button onClick={handleClickMessage}>Send message</button>
+        </div>
+    );
 }
 
 export default App;
