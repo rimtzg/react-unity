@@ -11,7 +11,7 @@ function App() {
     });
 
     function handleClickMessage() {
-        sendMessage("GameController", "printMessage", "asdf");
+        sendMessage("GameController", "PrintMessage", "asdf");
     }
 
     return (
