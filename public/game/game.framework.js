@@ -1159,26 +1159,26 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 2749848: function() {
+ 2750216: function() {
   Module["emscripten_get_now_backup"] = performance.now;
  },
- 2749903: function($0) {
+ 2750271: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 2749951: function($0) {
+ 2750319: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 2749999: function() {
+ 2750367: function() {
   performance.now = Module["emscripten_get_now_backup"];
  },
- 2750054: function() {
+ 2750422: function() {
   return Module.webglContextAttributes.premultipliedAlpha;
  },
- 2750115: function() {
+ 2750483: function() {
   return Module.webglContextAttributes.preserveDrawingBuffer;
  }
 };
@@ -1280,6 +1280,10 @@ function stackTrace() {
  var js = jsStackTrace();
  if (Module["extraStackTrace"]) js += "\n" + Module["extraStackTrace"]();
  return demangleAll(js);
+}
+
+function _CheckIfPhantom() {
+ window.dispatchReactUnityEvent("CheckIfPhantom");
 }
 
 function _ClickPhantom() {
@@ -13187,6 +13191,7 @@ function intArrayFromString(stringy, dontAddNull, length) {
 }
 
 var asmLibraryArg = {
+ "CheckIfPhantom": _CheckIfPhantom,
  "ClickPhantom": _ClickPhantom,
  "JS_Accelerometer_IsRunning": _JS_Accelerometer_IsRunning,
  "JS_Accelerometer_Start": _JS_Accelerometer_Start,

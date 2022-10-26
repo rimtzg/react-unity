@@ -1,8 +1,6 @@
 import './App.css';
 
 import React, { useState, useEffect, useCallback } from "react";
-
-import { PublicKey, Transaction } from "@solana/web3.js";
 import { Unity, useUnityContext } from "react-unity-webgl";
 
 function getProvider(){
@@ -21,7 +19,7 @@ function getProvider(){
 
 function App() {
     const [publicKey, setPublicKey] = useState()
-    const [provider, setProvider] = useState(getProvider())
+    const [provider, setProvider] = useState()
     
     const { loadingProgression, unityProvider, sendMessage, addEventListener, removeEventListener } = useUnityContext({
         loaderUrl    : "game/game.loader.js",
@@ -47,19 +45,50 @@ function App() {
 
         setPublicKey(pubkey.toString())
 
-        sendMessage("GameController", "PrintMessage", pubkey.toString())
-    }, [])
+        sendMessage("GameController", "GetNFTs", pubkey.toString())
+    }, [sendMessage])
 
-    useEffect(() => {
+    const checkIfPhantom = useCallback( async() => {
+        console.log('Unity check if phantom')
+
+        let provider = getProvider()
+
         if (provider){
+            setProvider(provider)
             sendMessage("GameController", "IsPhantom")
         }
+    }, [sendMessage])
+
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         let provider = getProvider()
+
+    //         setProvider(provider)
+    //     }, 2000);
+    // })
+
+    // useEffect(() => {
+    //     addEventListener("CheckIfPhantom", checkIfPhantom)
+    //     return () => {
+    //         removeEventListener("CheckIfPhantom", checkIfPhantom)
+    //     }
+    // }, [addEventListener, removeEventListener, checkIfPhantom])
+
+    useEffect(() => {
+        // let provider = getProvider()
+
+        // if (provider){
+        //     setProvider(provider)
+        //     sendMessage("GameController", "IsPhantom")
+        // }
 
         addEventListener("ClickPhantom", handleClickPhantom)
+        addEventListener("CheckIfPhantom", checkIfPhantom)
         return () => {
             removeEventListener("ClickPhantom", handleClickPhantom)
+            removeEventListener("CheckIfPhantom", checkIfPhantom)
         }
-    }, [addEventListener, removeEventListener, handleClickPhantom])
+    }, [addEventListener, removeEventListener, handleClickPhantom, checkIfPhantom])
 
     return (
         <div className="App">
