@@ -1,7 +1,14 @@
 import './App.css';
 
+import { Buffer } from "buffer";
+// Buffer.from("anything", "base64");
+// window.Buffer = window.Buffer || require("buffer").Buffer;
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
+
+import { LAMPORTS_PER_SOL, Connection, clusterApiUrl, PublicKey, Transaction } from '@solana/web3.js';
+import { transfer, getMint, getOrCreateAssociatedTokenAccount, createTransferInstruction } from '@solana/spl-token'
 
 function getProvider(){
     if ("solana" in window) {
@@ -30,6 +37,61 @@ function App() {
 
     function handleClickMessage(){
         sendMessage("GameController", "PrintMessage", "ASDF")
+    }
+
+    async function handleAskTransaction(){
+        const TOKEN = '8qiGgayKGDfpt3VG6oa47qnzF4Ju3K12Ez2C6vMzsdTk'
+        const WALLET_SERVER = 'GRUNFFV9KCYLLiPHn32DoEfzQNG6J9JTVf1D8bMKZh61'
+
+        // Connect to cluster
+        const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
+        let blockhash = (await connection.getLatestBlockhash("finalized")).blockhash
+        console.log('Endpoint: ', connection.rpcEndpoint)
+
+        // Construct wallet keypairs
+        const fromWallet = getProvider()
+        await fromWallet.connect()
+        console.log('From Wallet: ', fromWallet.publicKey)
+
+        // Create new token mint
+        const mint = await getMint(connection, new PublicKey(TOKEN))
+        console.log('Mint: ', mint.address)
+
+        // Create associated token accounts for my token if they don't exist yet
+        const fromTokenAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            fromWallet,
+            mint.address,
+            fromWallet.publicKey
+        )
+        console.log('Token From: ', fromTokenAccount.address)
+
+        const toTokenAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            fromWallet,
+            mint.address,
+            new PublicKey(WALLET_SERVER)
+        )
+        console.log('Token To:', toTokenAccount.address)
+
+        // Create the transaction
+        const transaction = new Transaction({
+            recentBlockhash : blockhash,
+            feePayer : fromWallet.publicKey
+        }).add(
+            createTransferInstruction(
+                fromTokenAccount.address,
+                toTokenAccount.address,
+                fromWallet.publicKey,
+                1*LAMPORTS_PER_SOL
+            )
+        )
+        console.log(transaction)
+
+        // Sign and send the transaction
+        const { signature } = await fromWallet.signAndSendTransaction(transaction)
+
+        console.log(signature)
     }
 
     const handleClickPhantom = useCallback( async() => {
@@ -94,6 +156,7 @@ function App() {
         <div className="App">
             <Unity style={{width:'100%',height:"80vh"}} unityProvider={unityProvider} />
             <button onClick={handleClickMessage}>Send message</button>
+            <button onClick={handleAskTransaction}>Ask transaction</button>
         </div>
     )
 }
