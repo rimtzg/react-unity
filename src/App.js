@@ -1,6 +1,6 @@
 import './App.css';
 
-import { Buffer } from "buffer";
+// import { Buffer } from "buffer";
 // Buffer.from("anything", "base64");
 // window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -9,6 +9,8 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 
 import { LAMPORTS_PER_SOL, Connection, clusterApiUrl, PublicKey, Transaction } from '@solana/web3.js';
 import { transfer, getMint, getOrCreateAssociatedTokenAccount, createTransferInstruction } from '@solana/spl-token'
+
+import { GoogleLogin } from '@react-oauth/google'
 
 function getProvider(){
     if ("solana" in window) {
@@ -22,6 +24,10 @@ function getProvider(){
             return provider
         }
     }
+}
+
+const responseGoogle = (response) => {
+  console.log(response);
 }
 
 function App() {
@@ -157,6 +163,10 @@ function App() {
             <Unity style={{width:'100%',height:"80vh"}} unityProvider={unityProvider} />
             <button onClick={handleClickMessage}>Send message</button>
             <button onClick={handleAskTransaction}>Ask transaction</button>
+            <GoogleLogin
+                onSuccess={responseGoogle}
+                onError={responseGoogle}
+            />
         </div>
     )
 }

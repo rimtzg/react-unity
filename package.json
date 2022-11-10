@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-oauth/google": "^0.4.0",
     "@solana/spl-token": "^0.3.6",
     "@solana/web3.js": "^1.66.1",
     "@testing-library/jest-dom": "^5.16.5",
